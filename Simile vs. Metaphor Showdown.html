@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simile vs. Metaphor Showdown</title>
+<style>
+:root{color-scheme:dark;--bg:#0e1a2b;--sf:#17283f;--ink:#f4efe4;--mu:#a9b7cc;--sim:#ffd23f;--met:#5bc8ff;--ok:#3ddc84;--bad:#ff6b5c;--ln:#2c4363;--paper:#f6f0e0;--pt:#14213a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:500 clamp(17px,1.45vw,21px)/1.5 Verdana,Geneva,"Segoe UI",sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:22px clamp(14px,3vw,36px) 60px}
+header{padding:8px 0 22px;border-bottom:3px solid var(--ink);margin-bottom:26px;display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;justify-content:space-between}
+h1{margin:0;font:400 clamp(30px,5vw,58px)/1 Impact,Haettenschweiler,"Arial Narrow Bold","Arial Black",sans-serif;letter-spacing:.01em}
+.sub{margin:0;color:var(--sim);font-weight:700;font-size:1.05em}
+h2{font:400 clamp(28px,3.4vw,42px)/1.1 Impact,Haettenschweiler,"Arial Narrow Bold","Arial Black",sans-serif;margin:0 0 6px}
+.btn{font:inherit;font-weight:700;color:var(--pt);background:var(--paper);border:3px solid #000;border-radius:6px;padding:.55em 1.2em;cursor:pointer;box-shadow:4px 4px 0 #000;transition:transform .12s cubic-bezier(.3,1.4,.5,1),box-shadow .12s}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 #000}
+.btn:active{transform:translate(4px,4px);box-shadow:0 0 0 #000}
+.btn.go{background:var(--sim)}
+.btn.sm{font-size:.8em;padding:.35em .8em;box-shadow:3px 3px 0 #000}
+:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.panel{max-width:960px;margin:0 auto}
+[hidden]{display:none!important}
+.seg{display:inline-flex;border:3px solid var(--ink);border-radius:6px;overflow:hidden}
+.seg button{font:inherit;font-weight:700;color:var(--ink);background:transparent;border:0;padding:.6em 1.2em;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--pt)}
+.field{margin:20px 0}
+.field label{display:block;font-weight:700;margin-bottom:6px}
+input,select{font:inherit;color:var(--ink);background:var(--sf);border:3px solid var(--ln);border-radius:6px;padding:.45em .7em;width:100%;max-width:280px}
+.names{display:flex;gap:16px;flex-wrap:wrap}
+.hint{color:var(--mu);font-size:.85em}
+kbd{background:var(--paper);color:var(--pt);border-radius:4px;padding:0 .4em;font:700 .85em Verdana,sans-serif}
+.hud{display:flex;align-items:center;gap:16px;font-weight:700}
+.pg{flex:1;display:flex;gap:6px}
+.pg i{flex:1;height:14px;background:var(--sf);border:2px solid var(--ln);border-radius:3px;transition:background .25s,border-color .25s}
+.pg i.cur{border-color:var(--ink)}.pg i.ok{background:var(--ok);border-color:var(--ok)}.pg i.bad{background:var(--bad);border-color:var(--bad)}.pg i.done{background:var(--mu);border-color:var(--mu)}
+.tbar{height:10px;background:var(--sf);margin:10px 0 0;border-radius:3px;overflow:hidden}
+.tbar i{display:block;height:100%;width:0;background:var(--sim);transition:width .1s linear}
+.tbar i.low{background:var(--bad)}
+.sent{background:var(--paper);color:var(--pt);border:3px solid #000;border-radius:4px;box-shadow:9px 9px 0 #000;font:700 clamp(25px,3.7vw,46px)/1.25 Georgia,"Times New Roman",serif;text-align:center;padding:clamp(22px,4vw,44px) clamp(18px,3vw,40px);margin:32px auto 30px;max-width:900px;transform:rotate(-.6deg);transition:transform .38s cubic-bezier(.5,0,.8,.4),opacity .3s;animation:drop .7s cubic-bezier(.34,1.5,.64,1) backwards}
+.sent .w{display:inline-block;margin:0 .13em;animation:wi .45s cubic-bezier(.2,.9,.3,1.3) backwards;animation-delay:calc(.25s + var(--i)*45ms)}
+@keyframes drop{from{opacity:0;transform:translateX(150px) rotate(5deg)}}
+@keyframes wi{from{opacity:0;transform:translateY(.5em)}}
+#arena.out .sent{opacity:0;transform:translateX(-160px) rotate(-7deg)}
+.pls,.fb{transition:opacity .28s,transform .28s}
+#arena.out .pls,#arena.out .fb{opacity:0;transform:translateY(22px)}
+.pls{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:820px){.pls{grid-template-columns:1fr}}
+.pl{background:var(--sf);border:3px solid #000;border-radius:6px;padding:16px;box-shadow:6px 6px 0 #000;animation:rise .6s cubic-bezier(.34,1.4,.64,1) backwards;animation-delay:calc(.45s + var(--d))}
+.pl.p1{border-top:10px solid var(--sim)}.pl.p2{border-top:10px solid var(--met)}
+@keyframes rise{from{opacity:0;transform:translateY(50px)}}
+.ph{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;font-weight:700}
+.ph em{font-style:normal;display:inline-block;font:400 1.6em Impact,"Arial Black",sans-serif;color:var(--ok);margin-left:.2em}
+.ans{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.ab{font:inherit;font-weight:800;font-size:1.02em;color:var(--pt);border:3px solid #000;border-radius:6px;padding:.75em .3em;cursor:pointer;box-shadow:4px 4px 0 #000;transition:transform .12s cubic-bezier(.3,1.4,.5,1),box-shadow .12s,opacity .2s;animation:pop .45s cubic-bezier(.34,1.7,.64,1) backwards;animation-delay:calc(.7s + var(--k)*80ms)}
+.ab small{display:block;font-weight:600;font-size:.7em;opacity:.75}
+.ab.s{background:var(--sim)}.ab.m{background:var(--met)}.ab.n{background:var(--paper)}
+@keyframes pop{from{opacity:0;transform:scale(.7)}}
+.ab:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:6px 6px 0 #000}
+.ab:active:not(:disabled){transform:translate(4px,4px);box-shadow:0 0 0 #000}
+.ab:disabled{cursor:default;opacity:.5;box-shadow:none;transform:translate(4px,4px)}
+.ab.sel{opacity:1;outline:4px solid var(--ink);outline-offset:3px}
+.ab.right{opacity:1;background:var(--ok);animation:hop .6s cubic-bezier(.3,1.6,.5,1)}
+.ab.wrong{opacity:1;background:var(--bad);animation:shake .4s}
+@keyframes hop{35%{transform:translate(4px,-14px)}}
+@keyframes shake{25%{transform:translate(-8px,4px)}75%{transform:translate(8px,4px)}}
+.st{min-height:1.7em;margin-top:10px;font-weight:700;color:var(--mu)}
+.st.think::after{content:"";animation:dots 1.2s steps(4) infinite}
+@keyframes dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
+.fb{margin-top:22px;background:var(--paper);color:var(--pt);border:3px solid #000;border-radius:6px;box-shadow:6px 6px 0 #000;padding:18px 24px}
+.fb:not([hidden]){animation:fbi .45s cubic-bezier(.34,1.5,.64,1) backwards}
+@keyframes fbi{from{opacity:0;transform:translateY(40px)}}
+.fb .res{display:flex;gap:22px;flex-wrap:wrap;font-weight:800;font-size:1.1em;margin-bottom:6px}
+.fb .good{color:#0b7a3a}.fb .bad{color:#b3261e}
+.fb .why{margin:.3em 0 14px;font-size:1.08em}
+.pop{animation:sk .5s cubic-bezier(.3,1.8,.5,1)}
+@keyframes sk{40%{transform:scale(1.8)}}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;margin:24px 0;text-align:left}
+.stat{background:var(--sf);border:3px solid #000;border-radius:6px;box-shadow:6px 6px 0 #000;padding:14px 18px}
+.stat b{display:block;font:400 2.6em/1.1 Impact,"Arial Black",sans-serif;color:var(--sim)}
+.big{font:400 clamp(36px,6vw,72px)/1.05 Impact,Haettenschweiler,"Arial Narrow Bold","Arial Black",sans-serif;margin:.2em 0}
+.center{text-align:center}
+#result:not([hidden])>*{animation:fbi .55s cubic-bezier(.34,1.5,.64,1) backwards}
+#result>:nth-child(2){animation-delay:.12s}#result>:nth-child(3){animation-delay:.24s}
+#arena:not([hidden]){animation:fade .35s}
+@keyframes fade{from{opacity:0}}
+.cd{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:var(--bg)}
+.cd .num{font:400 clamp(160px,34vw,420px)/1 Impact,Haettenschweiler,"Arial Black",sans-serif;text-shadow:12px 12px 0 #000;animation:slam .85s cubic-bezier(.3,1.5,.5,1) both}
+.cd .num.go{color:var(--ok);font-size:clamp(120px,26vw,330px)}
+.cd .lbl{position:absolute;bottom:12%;color:var(--mu);font-weight:700;font-size:1.2em}
+@keyframes slam{0%{transform:scale(3) rotate(-10deg);opacity:0}30%{transform:scale(1) rotate(-2deg);opacity:1}80%{transform:scale(1) rotate(-2deg);opacity:1}100%{transform:scale(.8) rotate(-2deg);opacity:0}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><h1>Simile vs. Metaphor Showdown</h1><p class="sub">Figurative Rush</p></header>
+
+<div class="panel" id="setup">
+  <h2>Pick your match</h2>
+  <p class="hint" style="font-size:1em;margin:0">10 sentences. Simile, Metaphor, or Neither?</p>
+  <div class="field"><label>Mode</label>
+    <div class="seg"><button id="mSolo" aria-pressed="true">You vs. the bot</button><button id="mDuo" aria-pressed="false">Two players</button></div>
+  </div>
+  <div class="field" id="dfield"><label>Bot difficulty</label>
+    <div class="seg" id="dseg"><button data-d="easy" aria-pressed="false">Easy</button><button data-d="hard" aria-pressed="true">Hard</button><button data-d="demon" aria-pressed="false">Demon</button></div>
+    <p class="hint" id="dhint" style="margin:8px 0 0"></p>
+  </div>
+  <div class="field names">
+    <div><label for="n1" id="l1">Your name</label><input id="n1" value="Player 1" maxlength="14"></div>
+    <div id="p2f" hidden><label for="n2">Player 2</label><input id="n2" value="Player 2" maxlength="14"></div>
+  </div>
+  <div class="field"><label for="tsel">Time per question</label>
+    <select id="tsel"><option value="15" selected>15 seconds</option><option value="30">30 seconds</option><option value="0">No timer</option></select>
+  </div>
+  <button class="btn go" id="startBtn" style="font-size:1.2em">Start the game</button>
+  <p class="hint" id="keyHint"></p>
+</div>
+
+<div class="panel" id="arena" hidden>
+  <div class="hud"><span id="rd"></span><div class="pg" id="pg"></div><span id="tm"></span><button class="btn sm" id="quitBtn">Quit</button></div>
+  <div class="tbar"><i id="tb"></i></div>
+  <p class="sent" id="sent"></p>
+  <div class="pls" id="pls"></div>
+  <div class="fb" id="fb" hidden></div>
+</div>
+
+<div class="panel center" id="result" hidden></div>
+<div class="cd" id="cd" hidden aria-live="assertive"></div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+var LBL={s:"Simile",m:"Metaphor",n:"Neither"};
+var Q=[
+ ["Her smile was as bright as the morning sun.","s","“As … as” compares a smile to the sun. Two unlike things, so it’s a simile."],
+ ["My brother snores like a freight train.","s","“Like” compares snoring to a freight train. Simile."],
+ ["He runs like the wind.","s","A runner is compared to the wind using “like”. Simile."],
+ ["The exam felt like climbing a mountain.","s","“Felt like” links an exam to a mountain climb. Simile."],
+ ["Her eyes sparkled like diamonds.","s","Eyes are compared to diamonds with “like”. Simile."],
+ ["I’m as hungry as a horse.","s","“As … as” compares a person’s hunger to a horse’s. Simile."],
+ ["The snow was like a white blanket over the town.","s","Snow is compared to a blanket with “like”. Simile."],
+ ["The baby slept like a log.","s","“Like” compares a sleeping baby to a log. Simile."],
+ ["Her words were as sharp as knives.","s","“As … as” compares words to knives. Simile."],
+ ["He was as quiet as a mouse.","s","“As … as” compares a person to a mouse. Simile."],
+ ["The runner moved like a cheetah.","s","“Like” compares a runner to a cheetah. Simile."],
+ ["My room looks like a tornado hit it.","s","“Looks like” compares a messy room to a tornado’s aftermath. Simile."],
+ ["The lake was as smooth as glass.","s","“As … as” compares water to glass. Simile."],
+ ["She sings like an angel.","s","“Like” compares her singing to an angel’s. Simile."],
+ ["The old bike creaked like a rusty gate.","s","“Like” compares the bike’s sound to a gate. Simile."],
+ ["He’s as stubborn as a mule.","s","“As … as” compares a person to a mule. Simile."],
+ ["The crowd roared like thunder.","s","“Like” compares a crowd’s noise to thunder. Simile."],
+ ["Our puppy is as soft as a cloud.","s","“As … as” compares a puppy to a cloud. Simile."],
+ ["Time is a thief.","m","It says time is a thief, with no “like” or “as”. Metaphor."],
+ ["The classroom was a zoo.","m","The room isn’t literally a zoo. It states that it is. Metaphor."],
+ ["My phone is my lifeline.","m","Says the phone is a lifeline directly. Metaphor."],
+ ["Life is a roller coaster.","m","Life isn’t literally a ride. A direct comparison, so metaphor."],
+ ["The moon was a silver coin in the sky.","m","The moon is said to be a coin, with no bridge word. Metaphor."],
+ ["Words are weapons.","m","Words can’t literally be weapons. It says they are. Metaphor."],
+ ["Her heart is a locked door.","m","Heart = locked door. A bold direct comparison, so metaphor."],
+ ["Fear was a cold hand on her neck.","m","Fear is said to be a hand. No “like” or “as”. Metaphor."],
+ ["Her voice is velvet.","m","Says a voice is velvet. No bridge word. Metaphor."],
+ ["The test was a nightmare.","m","A test can’t literally be a nightmare, but it says it is. Metaphor."],
+ ["My little brother is a tornado.","m","A boy is directly called a tornado. Metaphor."],
+ ["The city is a jungle.","m","A city isn’t a jungle, but the sentence says it is. Metaphor."],
+ ["Home is a warm hug.","m","Home is said to be a hug. No “like” or “as”. Metaphor."],
+ ["He is a walking dictionary.","m","A person is called a dictionary. Direct comparison. Metaphor."],
+ ["The stars were diamonds scattered across the sky.","m","Stars are said to be diamonds. No bridge word. Metaphor."],
+ ["Her laughter is music.","m","Laughter is stated to be music. Metaphor."],
+ ["School is a marathon, not a sprint.","m","School is called a marathon. A direct comparison, so metaphor."],
+ ["Our team is a well-oiled machine.","m","A team is said to be a machine. Metaphor."],
+ ["Books are doorways to other worlds.","m","Books are called doorways. No “like” or “as”. Metaphor."],
+ ["I like pizza more than burgers.","n","“Like” means enjoy here. Nothing is being compared. Neither."],
+ ["She looks like her mother.","n","Two people with a real resemblance. That’s literal, not figurative. Neither."],
+ ["This backpack is as heavy as that one.","n","Two backpacks, same kind of thing, literal comparison. Neither."],
+ ["The sun is very hot today.","n","Plain description with no comparison. Neither."],
+ ["He felt like going home early.","n","“Felt like” means wanted to. No comparison. Neither."],
+ ["Dogs are mammals.","n","“Are” states a fact. It’s literally true, so not a metaphor. Neither."],
+ ["She ran as fast as her brother.","n","Two runners, a literal comparison of speed. Neither."],
+ ["I like going to the beach.","n","“Like” means enjoy. Nothing is being compared. Neither."],
+ ["Mr. Lee is a teacher.","n","“Is” states a true fact about his job. Not a metaphor. Neither."],
+ ["He is as tall as his father.","n","Two people compared on a real measurement. Literal. Neither."],
+ ["The book is on the table.","n","A plain statement of where the book is. Neither."],
+ ["The Nile is a river in Africa.","n","“Is” states a fact. It really is a river. Neither."],
+ ["We like each other.","n","“Like” means enjoy being friends. No comparison. Neither."],
+ ["I feel like watching a movie tonight.","n","“Feel like” means want to. No comparison. Neither."],
+ ["My sister looks like my cousin.","n","Two people who really resemble each other. Literal. Neither."]
+];
+var ROUNDS=10,BOT="Barry the Bot",G=null,timer=null,cdTimer=null,cfg={mode:1,t:15,diff:"hard",n1:"Player 1",n2:"Player 2"};
+var KEYS=[{"1":"s","2":"m","3":"n"},{"8":"s","9":"m","0":"n"}],KL=[["1","2","3"],["8","9","0"]];
+
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
+function pick(){
+  var by={s:[],m:[],n:[]};Q.forEach(function(q){by[q[1]].push(q)});
+  return shuffle(shuffle(by.s).slice(0,3).concat(shuffle(by.m).slice(0,4),shuffle(by.n).slice(0,3)));
+}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function screen(n){["setup","arena","result"].forEach(function(id){$("#"+id).hidden=id!==n})}
+function countUp(el,a,b){var t0=performance.now();(function f(t){var k=Math.min(1,(t-t0)/600);el.textContent=Math.round(a+(b-a)*k);if(k<1)requestAnimationFrame(f)})(t0)}
+
+/* setup */
+function setMode(duo){
+  cfg.mode=duo?2:1;
+  $("#mSolo").setAttribute("aria-pressed",!duo);$("#mDuo").setAttribute("aria-pressed",duo);
+  $("#p2f").hidden=!duo;$("#dfield").hidden=duo;
+  $("#l1").textContent=duo?"Player 1 (keys 1 2 3)":"Your name (keys 1 2 3)";
+  $("#keyHint").innerHTML=duo?"Player 1: <kbd>1</kbd> Simile, <kbd>2</kbd> Metaphor, <kbd>3</kbd> Neither. Player 2: <kbd>8</kbd>, <kbd>9</kbd>, <kbd>0</kbd>. <kbd>Enter</kbd> for next.":"Press <kbd>1</kbd> Simile, <kbd>2</kbd> Metaphor, <kbd>3</kbd> Neither. <kbd>Enter</kbd> for next.";
+}
+setMode(false);
+var DH={easy:"Barry takes his time and makes mistakes.",hard:"Barry matches your pace and keeps the score close.",demon:"Barry is lightning fast and almost never misses."};
+function setDiff(d){cfg.diff=d;$$("#dseg button").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.d===d)});$("#dhint").textContent=DH[d]}
+$$("#dseg button").forEach(function(b){b.onclick=function(){setDiff(b.dataset.d)}});
+setDiff("hard");
+$("#mSolo").onclick=function(){setMode(false)};
+$("#mDuo").onclick=function(){setMode(true)};
+$("#startBtn").onclick=function(){
+  cfg.t=parseInt($("#tsel").value,10);
+  cfg.n1=$("#n1").value.trim()||"Player 1";cfg.n2=$("#n2").value.trim()||"Player 2";
+  startGame();
+};
+$("#quitBtn").onclick=function(){exitGame()};
+
+function stopAll(){clearInterval(timer);clearTimeout(cdTimer);if(G)clearTimeout(G.botT)}
+function startGame(){
+  stopAll();
+  BOT={easy:"Easy Barry",hard:"Barry the Bot",demon:"Demon Barry"}[cfg.diff];
+  var ps=[{name:cfg.n1},cfg.mode===2?{name:cfg.n2}:{name:BOT,bot:true}];
+  ps.forEach(function(p){p.score=0;p.streak=0;p.best=0;p.ok=0;p.choice=null;p.locked=false;p.rt=0});
+  G={qs:pick(),i:0,phase:"count",tl:0,ps:ps,rts:[],hist:[],botT:null,t0:0};
+  screen("arena");$("#arena").classList.remove("out");
+  $("#sent").innerHTML="";$("#pls").innerHTML="";$("#fb").hidden=true;
+  $("#pg").innerHTML=new Array(ROUNDS+1).join("<i></i>");
+  $("#rd").textContent="Get ready";$("#tm").textContent="";$("#tb").style.width="0";
+  countdown(3);
+}
+function countdown(n){
+  var cd=$("#cd"),cols={3:"var(--sim)",2:"var(--met)",1:"var(--ink)"};
+  cd.hidden=false;
+  cd.innerHTML=(n>0?'<div class="num" style="color:'+cols[n]+'">'+n+'</div>':'<div class="num go">GO!</div>')+'<div class="lbl">'+esc(cfg.n1)+' vs. '+esc(cfg.mode===2?cfg.n2:BOT)+'</div>';
+  cdTimer=setTimeout(function(){
+    if(n>0)countdown(n-1);else{cd.hidden=true;cd.innerHTML="";renderQ()}
+  },n>0?850:700);
+}
+function exitGame(){stopAll();$("#cd").hidden=true;G=null;screen("setup")}
+function pgMark(){
+  $$("#pg i").forEach(function(el,k){el.className=G.hist[k]||(k===G.i?"cur":"")});
+}
+
+function renderQ(){
+  var q=G.qs[G.i];G.phase="ask";
+  G.ps.forEach(function(p){p.choice=null;p.locked=false;p.rt=0});
+  $("#rd").textContent="Round "+(G.i+1)+" of "+ROUNDS;
+  pgMark();
+  $("#sent").innerHTML=("“"+q[0]+"”").split(" ").map(function(w,i){return '<span class="w" style="--i:'+i+'">'+esc(w)+'</span>'}).join(" ");
+  $("#fb").hidden=true;$("#fb").innerHTML="";
+  $("#tb").classList.remove("low");
+  $("#pls").innerHTML=G.ps.map(function(p,i){
+    var btns=["s","m","n"].map(function(a,k){
+      return '<button class="ab '+a+'" style="--k:'+k+'" data-p="'+i+'" data-a="'+a+'"'+(p.bot?" disabled":"")+'>'+LBL[a]+(p.bot?"":"<small>press "+KL[i][k]+"</small>")+'</button>';
+    }).join("");
+    return '<div class="pl p'+(i+1)+'" style="--d:'+(i*.12)+'s"><div class="ph"><b>'+esc(p.name)+'</b><span>Score<em id="sc'+i+'">'+p.score+'</em></span><span>Streak<em id="sk'+i+'">'+p.streak+'</em></span></div><div class="ans">'+btns+'</div><div class="st'+(p.bot?" think":"")+'" id="st'+i+'">'+(p.bot?"Thinking":"")+'</div></div>';
+  }).join("");
+  $$(".ab").forEach(function(b){b.onclick=function(){lock(+b.dataset.p,b.dataset.a)}});
+  clearInterval(timer);G.t0=performance.now();
+  if(cfg.t>0){
+    G.tl=cfg.t;tick();
+    timer=setInterval(function(){G.tl=Math.max(0,G.tl-.1);tick();if(G.tl<=0)reveal()},100);
+  }else{$("#tm").textContent="";$("#tb").style.width="0"}
+  if(G.ps[1].bot)botPlan();
+}
+function tick(){
+  $("#tm").textContent=Math.ceil(G.tl)+"s";
+  $("#tb").style.width=(G.tl/cfg.t*100)+"%";
+  $("#tb").classList.toggle("low",G.tl<=5);
+}
+
+/* bot: paces itself around the player's own average speed and keeps the score tight */
+var DIFF={
+ easy:{acc:.5,k:.03,min:.3,max:.7,sp:[1.2,1.6],floor:2500},
+ hard:{acc:.78,k:.12,min:.4,max:.95,sp:[.82,1.14],floor:1500},
+ demon:{acc:.96,k:0,min:.9,max:.98,sp:[.5,.8],floor:1100}
+};
+function botPlan(){
+  var p=G.ps[0],b=G.ps[1],q=G.qs[G.i],d=DIFF[cfg.diff];
+  var avg=G.rts.length?G.rts.reduce(function(a,c){return a+c},0)/G.rts.length:5200;
+  var ms=avg*(d.sp[0]+Math.random()*(d.sp[1]-d.sp[0]))+(Math.random()*400-200);
+  ms=Math.max(d.floor,Math.min(ms,cfg.t>0?cfg.t*1000-1200:25000));
+  var pc=Math.max(d.min,Math.min(d.max,d.acc+(p.ok-b.ok)*d.k)),ch=q[1];
+  if(Math.random()>=pc){var o=["s","m","n"].filter(function(x){return x!==q[1]});ch=o[Math.floor(Math.random()*2)]}
+  G.botT=setTimeout(function(){lock(1,ch)},ms);
+}
+
+function lock(pi,a){
+  if(!G||G.phase!=="ask")return;
+  var p=G.ps[pi];if(p.locked)return;
+  p.locked=true;p.choice=a;p.rt=performance.now()-G.t0;
+  if(!p.bot)G.rts.push(p.rt);
+  $$('.ab[data-p="'+pi+'"]').forEach(function(b){
+    b.disabled=true;
+    if(!p.bot&&cfg.mode===1&&b.dataset.a===a)b.classList.add("sel");
+  });
+  var st=$("#st"+pi);st.classList.remove("think");st.textContent="Locked in";
+  if(G.ps.every(function(x){return x.locked}))reveal();
+}
+
+function reveal(){
+  if(!G||G.phase!=="ask")return;
+  G.phase="fb";clearInterval(timer);clearTimeout(G.botT);
+  var q=G.qs[G.i],lines=[],ps=G.ps;
+  if(!ps[0].locked&&!ps[0].bot)G.rts.push(cfg.t>0?cfg.t*1000:20000);
+  var oks=ps.map(function(p){return p.choice===q[1]});
+  var fast=oks[0]&&oks[1]?(ps[0].rt<=ps[1].rt?0:1):-1;
+  ps.forEach(function(p,i){
+    var ok=oks[i],pts=0;
+    if(ok){p.streak++;p.ok++;p.best=Math.max(p.best,p.streak);pts=10+(p.streak>1?Math.min(p.streak-1,5)*2:0)+(i===fast?3:0);p.score+=pts}
+    else p.streak=0;
+    $$('.ab[data-p="'+i+'"]').forEach(function(b){
+      b.disabled=true;b.classList.remove("sel");
+      if(b.dataset.a===q[1])b.classList.add("right");
+      else if(b.dataset.a===p.choice)b.classList.add("wrong");
+    });
+    countUp($("#sc"+i),p.score-pts,p.score);
+    var sk=$("#sk"+i);sk.textContent=p.streak;
+    if(ok){sk.classList.remove("pop");void sk.offsetWidth;sk.classList.add("pop")}
+    var st=$("#st"+i);st.classList.remove("think");st.textContent=p.choice?"Picked "+LBL[p.choice]:"No answer";
+    var tag=ok?'<span class="good">+'+pts+(i===fast?" (faster)":"")+(p.streak>2?", streak of "+p.streak:"")+'</span>':'<span class="bad">'+(p.choice?"Missed it":"Time’s up")+'</span>';
+    lines.push('<span>'+esc(p.name)+': '+tag+'</span>');
+  });
+  G.hist[G.i]=cfg.mode===2?"done":(oks[0]?"ok":"bad");pgMark();
+  var last=G.i===ROUNDS-1,fb=$("#fb");
+  fb.hidden=false;
+  fb.innerHTML='<div class="res">'+lines.join("")+'</div><p class="why"><b>Answer: '+LBL[q[1]]+'.</b> '+q[2]+'</p><button class="btn go" id="nextBtn">'+(last?"See results":"Next question")+' <kbd>Enter</kbd></button>';
+  $("#nextBtn").onclick=next;$("#nextBtn").focus();
+}
+function next(){
+  if(!G||G.phase!=="fb")return;
+  G.phase="trans";
+  var g=G;$("#arena").classList.add("out");
+  setTimeout(function(){
+    if(G!==g)return;
+    $("#arena").classList.remove("out");
+    G.i++;if(G.i>=ROUNDS)finish();else renderQ();
+  },360);
+}
+
+function finish(){
+  G.phase="done";stopAll();screen("result");
+  var a=G.ps[0],b=G.ps[1],d=a.score-b.score,head;
+  if(cfg.mode===2)head=d===0?"It’s a tie!":(d>0?a:b).name+" wins!";
+  else head=d>0?"You beat "+BOT+" by "+d:d<0?BOT+" wins by "+(-d):"Dead heat with "+BOT;
+  var h='<p class="big">'+esc(head)+'</p><div class="stats">'+G.ps.map(function(p){
+    return '<div class="stat"><b>'+p.score+'</b>'+esc(p.name)+'<br><span class="hint">'+p.ok+' of '+ROUNDS+' right, best streak '+p.best+'</span></div>';
+  }).join("")+'</div><button class="btn go" id="again">Play again <kbd>Enter</kbd></button> <button class="btn" id="chg">Change mode</button>';
+  $("#result").innerHTML=h;
+  $("#again").onclick=startGame;$("#chg").onclick=exitGame;$("#again").focus();
+}
+
+document.addEventListener("keydown",function(e){
+  var t=e.target,tag=t&&t.tagName;
+  if(tag==="INPUT"||tag==="SELECT"||tag==="TEXTAREA")return;
+  if(e.ctrlKey||e.metaKey||e.altKey||!G)return;
+  if(G.phase==="ask"){
+    for(var pi=0;pi<(cfg.mode===2?2:1);pi++){
+      var a=KEYS[pi][e.key];
+      if(a){lock(pi,a);e.preventDefault();return}
+    }
+  }else if(G.phase==="fb"&&(e.key==="Enter"||e.key===" "||e.key.toLowerCase()==="n")){
+    e.preventDefault();next();
+  }else if(G.phase==="done"&&(e.key==="Enter"||e.key===" ")){
+    e.preventDefault();startGame();
+  }
+});
+})();
+</script>
+</body>
+</html>
